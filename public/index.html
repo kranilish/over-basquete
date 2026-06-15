@@ -1,1 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Over Basquete - Jogos e H2H</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#e9e9e9;font-family:Arial,Helvetica,sans-serif;color:#061f2e}
+.topline{height:4px;background:#05212b}
+.sportbar{height:78px;background:#f7f7f7;border-bottom:1px solid #d7d7d7;display:flex;align-items:center;justify-content:center}
+.sporttab{height:78px;display:flex;align-items:center;gap:9px;color:#f50a4d;font-weight:900;border-bottom:4px solid #f50a4d;padding:0 28px;font-size:14px}
+.shell{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:180px 1fr;gap:0}
+.sidebar{padding:24px 15px;background:#e9e9e9;font-size:14px}
+.sideTitle{font-weight:1000;margin:0 0 22px;color:#0b2635;letter-spacing:.5px}
+.sideItem{display:flex;gap:9px;align-items:center;margin:15px 0;color:#243b4a}
+.sideItem b{font-weight:700}
+.add{color:#f50a4d;font-weight:900}
+.country{margin:14px 0;color:#263947}
+.more{margin-top:18px;text-decoration:underline;font-weight:700;color:#34505c}
+.content{padding:66px 0 50px}
+.gamesCard,.card,.calc{width:720px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.05);margin-bottom:18px}
+.gamesHead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #eee}
+.gamesHead b{font-size:16px}
+.datePill{background:#f2f3f5;padding:8px 12px;border-radius:8px;font-weight:900;color:#667483;font-size:12px}
+.gameLeague{background:#f0f1f3;padding:9px 14px;font-size:12px;font-weight:1000;color:#394b59;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.gameLeague span:last-child{background:#e5e7eb;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:#8a95a1}
+.gameItem{display:grid;grid-template-columns:62px 1fr 44px;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid #f0f1f3;cursor:pointer}
+.gameItem:hover{background:#fafafa}
+.time{color:#8a95a1;font-size:13px;line-height:22px}
+.teamsGame{display:grid;gap:4px}
+.teamGame{display:flex;align-items:center;gap:8px;font-size:16px;color:#102f40}
+.star{color:#c5ccd4;font-size:29px;text-align:right}
+.tip{padding:10px 14px;color:#667483;font-size:12px;background:#fbfbfb}
+.breadcrumb{height:52px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #f0f0f0;padding:0 18px;color:#667483;font-size:12px;font-weight:1000;text-transform:uppercase;letter-spacing:.4px}
+.header{height:194px;border-bottom:1px solid #f0f0f0;text-align:center;position:relative;padding-top:28px}
+.date{font-size:14px;color:#667483;margin-bottom:28px}
+.match{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center}
+.teamName{font-size:17px;color:#203746;font-weight:500}
+.dash{font-size:31px;font-weight:1000;color:#001e2b}
+.tabs{height:45px;display:flex;align-items:end;gap:30px;padding:0 18px;border-bottom:1px solid #f1f1f1;color:#707d8b;font-size:12px;font-weight:1000;text-transform:uppercase}
+.tab{height:45px;display:flex;align-items:center}.tab.on{color:#f50a4d;border-bottom:4px solid #f50a4d}
+.filters{display:flex;gap:9px;padding:17px 14px 14px}
+.filter{background:#eef0f2;color:#607080;font-size:12px;font-weight:1000;padding:11px 15px;border-radius:8px}.filter.on{background:#f50a4d;color:#fff}
+.section{margin:0 14px 8px;background:#eee;border-radius:5px;color:#7a8490;font-size:12px;font-weight:1000;padding:9px 12px;text-transform:uppercase}
+.rows{padding:0 14px 12px}
+.grow{display:grid;grid-template-columns:70px 38px 1fr 48px 28px;gap:8px;align-items:center;min-height:36px;border-bottom:1px solid #f1f2f4;font-size:13px}
+.dateCell{color:#77838f}.league{font-weight:1000;color:#112b3a}.teams{display:grid;gap:2px}.team{display:flex;gap:7px;align-items:center;color:#263947}.team b{font-weight:1000}.score{display:grid;gap:2px;text-align:right;font-weight:1000;color:#071d2b}.badge{width:20px;height:20px;border-radius:5px;color:white;font-size:12px;font-weight:1000;display:flex;align-items:center;justify-content:center}.V{background:#11b95d}.D{background:#e40b16}
+.centerAd{height:29px;background:#d5d5d5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:1000;margin-top:-3px}
+.midmatch{height:70px;background:#fff;display:grid;grid-template-columns:1fr 100px 1fr;align-items:center}
+.miniLogo{width:42px;height:42px;border:1px solid #e9edf2;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:auto}
+.midDate{text-align:center;font-size:12px;font-weight:900;color:#425866}.midDash{font-size:28px;color:#001e2b}
+.show{text-align:center;color:#12313f;text-decoration:underline;font-size:12px;font-weight:900;padding:8px 0 16px}
+.calc{padding:14px;border:1px solid #ddd}
+.calc h3{margin:0 0 12px;font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.box{background:#f3f5f7;border:1px solid #dfe4ea;border-radius:8px;text-align:center;padding:10px}.box span{display:block;color:#6f7b86;font-size:11px;font-weight:900}.box b{font-size:20px}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{display:none}.content{padding:15px}.gamesCard,.card,.calc{width:100%}}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div class="sportbar"><div class="sporttab">🏀 BASQUETE</div></div>
+<div class="shell">
+<aside class="sidebar">
+  <div class="sideTitle">⚑ &nbsp; LIGAS FIXADAS</div>
+  <div class="sideItem">🇧🇷 <b>NBB</b></div><div class="sideItem">🇧🇷 <b>CBB</b></div><div class="sideItem">🇧🇷 <b>LBF Feminina</b></div><div class="sideItem">🇪🇸 <b>ACB</b></div><div class="sideItem">🇺🇸 <b>NBA</b></div><div class="sideItem">🇮🇹 <b>Liga A</b></div><div class="sideItem">🇪🇺 <b>EuroLiga</b></div><div class="sideItem">🇪🇺 <b>EuroCopa</b></div><div class="sideItem">🇪🇺 <b>Campeonato Mun...</b></div><div class="sideItem">🇪🇺 <b>Liga dos Campeõ...</b></div>
+  <div class="sideTitle" style="margin-top:42px">★ &nbsp; MINHAS EQUIPES</div>
+  <div class="sideItem add">＋ ADICIONAR EQUIPE</div>
+  <div class="sideTitle" style="margin-top:36px">PAÍSES</div>
+  <div class="country">Albânia</div><div class="country">Alemanha</div><div class="country">Arábia Saudita</div><div class="country">Argentina</div><div class="country">Austrália</div><div class="country">Áustria</div><div class="country">Bahrein</div><div class="country">Belarus</div><div class="country">Bélgica</div><div class="country">Bolívia</div><div class="country">Bósnia e Herzegovina</div><div class="country">Brasil</div><div class="country">Bulgária</div><div class="country">Canadá</div><div class="country">Catar</div><div class="country">Cazaquistão</div><div class="country">Chile</div><div class="country">China</div><div class="country">Chipre</div><div class="country">Colômbia</div><div class="country">Coreia do Sul</div><div class="more">Mostrar mais⌄</div>
+</aside>
 
+<main class="content">
+<section class="gamesCard">
+  <div class="gamesHead"><b>Jogos de hoje</b><div class="datePill">15/06 DOM</div></div>
+  <div class="gameLeague">🇸🇻 LMB, Apertura, Mata-mata · El Salvador <span>1</span></div>
+  <div class="gameItem" onclick="loadGame('Salvadoreños','Santa Tecla BC','🇸🇻 EL SALVADOR','LMB, APERTURA · MATA-MATA','22:15')">
+    <div class="time">22:15<br>-</div><div class="teamsGame"><div class="teamGame">🏀 Salvadoreños</div><div class="teamGame">🏀 Santa Tecla BC</div></div><div class="star">☆</div>
+  </div>
+  <div class="gameLeague">🇫🇷 Élite 2, Mata-mata · França <span>1</span></div>
+  <div class="gameItem" onclick="loadGame('Poitiers','Pau-Orthez','🇫🇷 FRANÇA','ELITE 2 · PLAYOFFS · FINAL','15:30')">
+    <div class="time">15:30<br>-</div><div class="teamsGame"><div class="teamGame">🦈 Poitiers</div><div class="teamGame">🟢 Pau-Orthez</div></div><div class="star">☆</div>
+  </div>
+  <div class="gameLeague">🏆 FIBA U18 Women&apos;s AmeriCup · Internacional <span>4</span></div>
+  <div class="gameItem" onclick="loadGame('República Dominicana U18','Porto Rico U18','🌎 INTERNACIONAL','FIBA U18 WOMEN&apos;S AMERICUP · CLASSIFICAÇÃO 7-8','15:30')">
+    <div class="time">15:30<br>-</div><div class="teamsGame"><div class="teamGame">🇩🇴 República Dominicana U18</div><div class="teamGame">🇵🇷 Porto Rico U18</div></div><div class="star">☆</div>
+  </div>
+  <div class="gameItem" onclick="loadGame('Paraguai U18','México U18','🌎 INTERNACIONAL','FIBA U18 WOMEN&apos;S AMERICUP · CLASSIFICAÇÃO 5-6','18:00')">
+    <div class="time">18:00<br>-</div><div class="teamsGame"><div class="teamGame">🇵🇾 Paraguai U18</div><div class="teamGame">🇲🇽 México U18</div></div><div class="star">☆</div>
+  </div>
+  <div class="gameItem" onclick="loadGame('Argentina U18','Venezuela U18','🌎 INTERNACIONAL','FIBA U18 WOMEN&apos;S AMERICUP · 3RD PLACE GAME','20:30')">
+    <div class="time">20:30<br>-</div><div class="teamsGame"><div class="teamGame">🇦🇷 Argentina U18</div><div class="teamGame">🇻🇪 Venezuela U18</div></div><div class="star">☆</div>
+  </div>
+  <div class="tip">Clique em qualquer jogo. Abaixo abre a tela H2H/últimos jogos no formato da imagem.</div>
+</section>
+
+<section class="card">
+  <div class="breadcrumb" id="breadcrumb">🏀 BASQUETE › 🇫🇷 FRANÇA › ELITE 2 · PLAYOFFS · FINAL</div>
+  <div class="header">
+    <div class="date" id="gameDate">15.06.2026 15:30</div>
+    <div class="match">
+      <div class="teamName" id="homeName">Poitiers</div>
+      <div class="dash">-</div>
+      <div class="teamName" id="awayName">Pau-Orthez</div>
+    </div>
+  </div>
+  <div class="tabs"><div class="tab">SUMÁRIO</div><div class="tab">ODDS</div><div class="tab on">H2H</div><div class="tab">SORTEIO</div></div>
+  <div class="filters"><div class="filter on">TOTAL</div><div class="filter" id="homeFilter">POITIERS · CASA</div><div class="filter" id="awayFilter">PAU-ORTHEZ · FORA</div></div>
+  <div class="section" id="lastHomeTitle">ÚLTIMOS JOGOS: POITIERS</div>
+  <div class="rows" id="homeRows"></div>
+  <div class="midmatch"><div class="miniLogo">🏀</div><div class="midDate"><div class="midDash">-</div><span id="miniDate">15.06.2026 15:30</span></div><div class="miniLogo">🏀</div></div>
+  <div class="centerAd">18+ Jogue com responsabilidade</div>
+  <div class="section" id="lastAwayTitle" style="margin-top:13px">ÚLTIMOS JOGOS: PAU-ORTHEZ</div>
+  <div class="rows" id="awayRows"></div>
+  <div class="show">Mostrar mais jogos⌄</div>
+  <div class="section">CONFRONTOS DIRETOS</div>
+  <div class="rows" id="h2hRows"></div>
+  <div class="show">Mostrar mais jogos⌄</div>
+</section>
+
+<section class="calc">
+  <h3>Resumo para a planilha</h3>
+  <div class="grid">
+    <div class="box"><span>Jogos Casa</span><b>5</b></div>
+    <div class="box"><span>Média Casa</span><b id="avgH">87</b></div>
+    <div class="box"><span>Jogos Fora</span><b>5</b></div>
+    <div class="box"><span>Média Fora</span><b id="avgA">86</b></div>
+    <div class="box"><span>Linha</span><b id="line">173</b></div>
+    <div class="box"><span>Pts/Qt.</span><b id="qt">43</b></div>
+    <div class="box"><span>Entrada</span><b>Over</b></div>
+    <div class="box"><span>Status</span><b>Pré</b></div>
+  </div>
+</section>
+</main>
+</div>
+
+<script>
+const samples={
+ "Poitiers|Pau-Orthez":{
+  home:[['12.06.26','🇫🇷','PRO','Pau-Orthez','Poitiers',82,106,'V'],['09.06.26','🇫🇷','PRO','Poitiers','Nantes',85,75,'V'],['06.06.26','🇫🇷','PRO','Nantes','Poitiers',79,88,'V'],['03.06.26','🇫🇷','PRO','Poitiers','Nantes',80,83,'D'],['30.05.26','🇫🇷','PRO','Orleans','Poitiers',77,79,'V']],
+  away:[['12.06.26','🇫🇷','PRO','Pau-Orthez','Poitiers',82,106,'D'],['06.06.26','🇫🇷','PRO','Orleans','Pau-Orthez',85,90,'V'],['03.06.26','🇫🇷','PRO','Pau-Orthez','Orleans',90,72,'V'],['28.05.26','🇫🇷','PRO','Chalons-Reims','Pau-Orthez',78,79,'V'],['25.05.26','🇫🇷','PRO','Pau-Orthez','Chalons-Reims',89,87,'V']]
+ }
+};
+function generic(home,away){
+ const h=[[ '12.06.26','🌐','PRO',away,home,76,82,'V'],['09.06.26','🌐','PRO',home,'Rival A',88,79,'V'],['06.06.26','🌐','PRO','Rival B',home,84,81,'D'],['03.06.26','🌐','PRO',home,'Rival C',91,86,'V'],['30.05.26','🌐','PRO','Rival D',home,74,80,'V']];
+ const a=[[ '12.06.26','🌐','PRO',away,home,76,82,'D'],['09.06.26','🌐','PRO',away,'Rival E',83,78,'V'],['06.06.26','🌐','PRO','Rival F',away,80,85,'V'],['03.06.26','🌐','PRO',away,'Rival G',77,82,'V'],['30.05.26','🌐','PRO','Rival H',away,90,84,'D']];
+ return {home:h,away:a}
+}
+function row(g){
+ const [date,flag,league,t1,t2,s1,s2,res]=g;
+ return `<div class="grow">
+  <div class="dateCell">${date}</div>
+  <div class="league">${flag} ${league}</div>
+  <div class="teams"><div class="team">🏀 <span>${t1}</span></div><div class="team">🏀 <b>${t2}</b></div></div>
+  <div class="score"><span>${s1}</span><span>${s2}</span></div>
+  <div>${res?`<span class="badge ${res}">${res}</span>`:''}</div>
+ </div>`
+}
+function render(home,away,data){
+ homeRows.innerHTML=data.home.map(row).join('');
+ awayRows.innerHTML=data.away.map(row).join('');
+ h2hRows.innerHTML=[...data.home.slice(0,2),...data.away.slice(1,4)].map(row).join('');
+ const avgH=Math.round(data.home.reduce((a,b)=>a+b[6],0)/data.home.length);
+ const avgA=Math.round(data.away.reduce((a,b)=>a+b[6],0)/data.away.length);
+ avgHEl=document.getElementById('avgH');avgAEl=document.getElementById('avgA');
+ avgHEl.textContent=avgH;avgAEl.textContent=avgA;line.textContent=avgH+avgA;qt.textContent=Math.round((avgH+avgA)/4);
+}
+function loadGame(home,away,country,league,time){
+ homeName.textContent=home; awayName.textContent=away;
+ breadcrumb.textContent='🏀 BASQUETE › '+country+' › '+league;
+ gameDate.textContent='15.06.2026 '+time;
+ miniDate.textContent='15.06.2026 '+time;
+ homeFilter.textContent=home.toUpperCase()+' · CASA';
+ awayFilter.textContent=away.toUpperCase()+' · FORA';
+ lastHomeTitle.textContent='ÚLTIMOS JOGOS: '+home.toUpperCase();
+ lastAwayTitle.textContent='ÚLTIMOS JOGOS: '+away.toUpperCase();
+ const key=home+'|'+away;
+ render(home,away,samples[key]||generic(home,away));
+ document.querySelector('.card').scrollIntoView({behavior:'smooth',block:'start'});
+}
+loadGame('Poitiers','Pau-Orthez','🇫🇷 FRANÇA','ELITE 2 · PLAYOFFS · FINAL','15:30');
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "over-basquete-servidor",
+  "version": "1.0.0",
+  "description": "App local para buscar placar por quartos do Sofascore e preencher planilha Over Basquete",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}

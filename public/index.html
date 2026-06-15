@@ -1,1 +1,443 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Over Basquete — Jogos + H2H + Tabela Real</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#ececec;color:#0b2635}
+    .topline{height:4px;background:#001f2c}
+    .headerBar{height:78px;background:#f7f7f7;border-bottom:1px solid #d8d8d8;display:flex;align-items:center;justify-content:center}
+    .sportTab{height:78px;padding:0 30px;display:flex;align-items:center;gap:10px;border-bottom:4px solid #ff0f53;color:#ff0f53;font-size:15px;font-weight:900;letter-spacing:.4px}
+    .layout{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:180px 1fr;gap:20px;padding:0 14px 32px}
+    .sidebar{padding-top:24px}
+    .sideTitle{font-weight:900;font-size:14px;margin:10px 0 20px;letter-spacing:.5px}
+    .sideItem,.country{display:flex;align-items:center;gap:8px;color:#244050;margin:13px 0;font-size:15px}
+    .addTeam{color:#ff0f53;font-weight:900}
+    .more{margin-top:15px;text-decoration:underline;font-weight:700;color:#365363}
+    .content{padding-top:30px}
+    .card,.gamesCard,.calcCard{background:#fff;border-radius:10px;box-shadow:0 1px 0 rgba(0,0,0,.05);overflow:hidden;margin-bottom:18px}
+    .gamesHead{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #efefef}
+    .gamesHead b{font-size:16px}
+    .datePill{padding:8px 12px;border-radius:8px;background:#f3f4f6;color:#6b7886;font-size:12px;font-weight:900}
+    .tabsTop{display:flex;gap:10px;padding:14px 16px 0}
+    .filterTop{background:#eef0f2;color:#5c6b79;font-size:12px;font-weight:900;padding:10px 14px;border-radius:8px}
+    .filterTop.active{background:#ff0f53;color:#fff}
+    .leagueHeader{display:flex;align-items:center;justify-content:space-between;background:#eef2f5;color:#384c5a;font-weight:900;padding:10px 14px;font-size:13px;border-top:1px solid #f8f8f8}
+    .leagueHeader small{font-size:12px;color:#677583}
+    .gameItem{display:grid;grid-template-columns:64px 1fr 72px;gap:12px;padding:11px 14px;border-bottom:1px solid #f1f2f4;cursor:pointer;align-items:center;transition:.15s background}
+    .gameItem:hover{background:#fafafa}
+    .gameItem.active{background:#fdf3f6;outline:1px solid #ffd2df}
+    .timeCell{color:#7f8b96;font-size:13px;line-height:20px}
+    .teamsCell{display:grid;gap:5px}
+    .teamLine{display:flex;align-items:center;gap:8px;color:#163142;font-size:16px}
+    .teamLine b{font-weight:800}
+    .metaRight{text-align:right;font-size:12px;color:#7c8792}
+    .status{display:inline-flex;align-items:center;justify-content:center;padding:5px 8px;border-radius:999px;font-weight:900;font-size:11px}
+    .status.live{background:#fff1f0;color:#df1d1d}
+    .status.fin{background:#eefaf1;color:#149a4a}
+    .status.sched{background:#eef2f6;color:#5f7081}
+    .tip{padding:12px 14px;color:#667483;font-size:12px;background:#fbfbfb}
+    .loading,.empty,.error{padding:22px 16px;color:#5f6f7f;font-size:14px}
+
+    .breadcrumb{height:54px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #f0f0f0;padding:0 18px;color:#6c7a87;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.35px}
+    .matchHero{padding:28px 20px 34px;border-bottom:1px solid #f0f0f0;text-align:center}
+    .matchDate{font-size:14px;color:#687784;margin-bottom:25px}
+    .heroGrid{display:grid;grid-template-columns:1fr 90px 1fr;align-items:center;gap:10px}
+    .heroTeam{display:flex;flex-direction:column;align-items:center;gap:10px}
+    .logoMock{width:64px;height:64px;border-radius:16px;background:#f5f7f9;border:1px solid #e4eaef;display:flex;align-items:center;justify-content:center;font-size:28px}
+    .teamName{font-size:26px;font-weight:300;color:#173142;text-align:center}
+    .heroMid{font-size:34px;font-weight:900;color:#001d2b}
+    .subHero{margin-top:12px;color:#7b8792;font-size:12px}
+    .mainTabs{display:flex;align-items:flex-end;gap:30px;border-bottom:1px solid #f1f1f1;padding:0 18px;color:#707d8b;font-size:12px;font-weight:900;text-transform:uppercase}
+    .mainTab{height:45px;display:flex;align-items:center}
+    .mainTab.active{color:#ff0f53;border-bottom:4px solid #ff0f53}
+    .miniFilters{display:flex;gap:9px;padding:16px 14px 12px}
+    .miniFilter{padding:10px 14px;border-radius:8px;background:#eef0f2;color:#62717f;font-size:12px;font-weight:900}
+    .miniFilter.active{background:#ff0f53;color:#fff}
+    .sectionTitle{margin:0 14px 8px;background:#efefef;border-radius:5px;padding:9px 12px;color:#77828c;font-size:12px;font-weight:900;text-transform:uppercase}
+    .rows{padding:0 14px 12px}
+    .row{display:grid;grid-template-columns:72px 45px 1fr 58px 28px;gap:8px;align-items:center;min-height:38px;border-bottom:1px solid #f2f3f4;font-size:13px}
+    .dateCell{color:#7a8691}
+    .leagueCode{color:#112b3a;font-weight:900}
+    .teamsCol{display:grid;gap:3px}
+    .teamsCol .team{display:flex;align-items:center;gap:8px;color:#253947}
+    .teamsCol .team strong{font-weight:900}
+    .scoreCol{display:grid;gap:3px;text-align:right;font-weight:900;color:#091f2d}
+    .badge{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:12px}
+    .V{background:#12b75c}.D{background:#e40d18}.E{background:#7b8a96}
+    .midMatch{display:grid;grid-template-columns:1fr 120px 1fr;align-items:center;height:74px;background:#fff}
+    .midLogo{margin:auto;width:44px;height:44px;border-radius:10px;border:1px solid #e7ebef;background:#f8fafb;display:flex;align-items:center;justify-content:center}
+    .midCenter{text-align:center;color:#455b69;font-size:12px;font-weight:900}
+    .midCenter .dash{font-size:28px;color:#001f2b;line-height:24px}
+    .adBar{height:29px;background:#d7d7d7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#233746}
+    .showMore{text-align:center;padding:10px 0 16px;font-size:12px;font-weight:900;color:#1a3a4a;text-decoration:underline}
+
+    .calcCard{padding:14px;border:1px solid #dfe4ea}
+    .calcTitle{margin:0 0 14px;font-size:18px}
+    .summaryTop{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+    .miniBox{background:#f3f5f7;border:1px solid #dde3e9;border-radius:10px;padding:12px;text-align:center}
+    .miniBox span{display:block;font-size:11px;color:#6d7985;font-weight:900;text-transform:uppercase}
+    .miniBox b{display:block;margin-top:6px;font-size:29px;color:#0d2433}
+    .sheet{overflow:auto;border:1px solid #d6dde4;border-radius:8px}
+    table.calcTable{width:100%;border-collapse:collapse;min-width:860px;background:#fff}
+    .calcTable th,.calcTable td{border:1px solid #dfe4ea;padding:8px 10px;text-align:center}
+    .calcTable th{background:#f1f4f7;color:#2b4150;font-size:13px}
+    .calcTable td{font-size:15px}
+    .calcTable .leftLab{background:#f8fafb;font-weight:900;text-align:left}
+    .big{font-size:46px;font-weight:900;color:#0a1f2b}
+    .green{background:#ccefd2;font-weight:900}
+    .red{background:#f6d0d0;font-weight:900}
+    .neutral{background:#eef2f6;font-weight:900}
+    .subBig{font-size:18px;font-weight:900}
+    .numberStrong{font-size:28px;font-weight:900}
+    .footerRow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+    .footBox{background:#f7f9fb;border:1px solid #dfe4ea;border-radius:10px;padding:10px;text-align:center}
+    .footBox span{display:block;font-size:12px;color:#6d7985;font-weight:900}
+    .footBox b{display:block;margin-top:6px;font-size:24px}
+    .source{padding-top:10px;color:#687784;font-size:12px}
+    .source a{color:#0f4a77}
+
+    @media(max-width:1020px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .content{padding-top:16px}
+      .teamName{font-size:20px}
+      .summaryTop,.footerRow{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:700px){
+      .gameItem{grid-template-columns:54px 1fr 58px}
+      .heroGrid{grid-template-columns:1fr 60px 1fr}
+      .teamName{font-size:18px}
+      .row{grid-template-columns:62px 40px 1fr 46px 24px;font-size:12px}
+      .summaryTop,.footerRow{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="topline"></div>
+  <div class="headerBar"><div class="sportTab">🏀 BASQUETE</div></div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sideTitle">⚑ LIGAS FIXADAS</div>
+      <div class="sideItem">🇧🇷 <b>NBB</b></div>
+      <div class="sideItem">🇧🇷 <b>CBB</b></div>
+      <div class="sideItem">🇧🇷 <b>LBF Feminina</b></div>
+      <div class="sideItem">🇪🇸 <b>ACB</b></div>
+      <div class="sideItem">🇺🇸 <b>NBA</b></div>
+      <div class="sideItem">🇮🇹 <b>Liga A</b></div>
+      <div class="sideItem">🇪🇺 <b>EuroLiga</b></div>
+      <div class="sideItem">🇪🇺 <b>EuroCopa</b></div>
+      <div class="sideItem">🇫🇷 <b>França</b></div>
+      <div class="sideItem">🇵🇷 <b>Porto Rico</b></div>
+      <div class="sideTitle" style="margin-top:40px">★ MINHAS EQUIPES</div>
+      <div class="sideItem addTeam">＋ ADICIONAR EQUIPE</div>
+      <div class="sideTitle" style="margin-top:34px">PAÍSES</div>
+      <div class="country">Albânia</div><div class="country">Alemanha</div><div class="country">Arábia Saudita</div>
+      <div class="country">Argentina</div><div class="country">Austrália</div><div class="country">Áustria</div>
+      <div class="country">Bahrein</div><div class="country">Belarus</div><div class="country">Bélgica</div>
+      <div class="country">Bolívia</div><div class="country">Bósnia e Herzegovina</div><div class="country">Brasil</div>
+      <div class="country">Bulgária</div><div class="country">Canadá</div><div class="country">Catar</div>
+      <div class="country">Cazaquistão</div><div class="country">Chile</div><div class="country">China</div>
+      <div class="more">Mostrar mais ⌄</div>
+    </aside>
+
+    <main class="content">
+      <section class="gamesCard">
+        <div class="gamesHead">
+          <b>Jogos de hoje</b>
+          <div class="datePill" id="todayLabel">Carregando…</div>
+        </div>
+        <div class="tabsTop">
+          <div class="filterTop active">TODOS</div>
+          <div class="filterTop">AO VIVO</div>
+          <div class="filterTop">ODDS</div>
+          <div class="filterTop">ENCERRADOS</div>
+          <div class="filterTop">PRÓXIMOS</div>
+        </div>
+        <div id="gamesContainer" class="loading">Buscando jogos reais do XScores…</div>
+        <div class="tip">Clique no jogo desejado. Abaixo o site abre o detalhe H2H e também a tabela estilo planilha com dados reais puxados do XScores.</div>
+      </section>
+
+      <section class="card" id="detailCard">
+        <div class="breadcrumb" id="crumb">🏀 BASQUETE › SELECIONE UM JOGO</div>
+        <div class="matchHero">
+          <div class="matchDate" id="matchDate">—</div>
+          <div class="heroGrid">
+            <div class="heroTeam">
+              <div class="logoMock">🏀</div>
+              <div class="teamName" id="homeName">Time da casa</div>
+            </div>
+            <div class="heroMid" id="heroMid">-</div>
+            <div class="heroTeam">
+              <div class="logoMock">🏀</div>
+              <div class="teamName" id="awayName">Time visitante</div>
+            </div>
+          </div>
+          <div class="subHero" id="subHero">Escolha um jogo acima para carregar os dados.</div>
+        </div>
+        <div class="mainTabs">
+          <div class="mainTab">SUMÁRIO</div>
+          <div class="mainTab">ODDS</div>
+          <div class="mainTab active">H2H</div>
+          <div class="mainTab">SORTEIO</div>
+        </div>
+        <div class="miniFilters">
+          <div class="miniFilter active">TOTAL</div>
+          <div class="miniFilter" id="homeFilter">CASA</div>
+          <div class="miniFilter" id="awayFilter">FORA</div>
+        </div>
+        <div class="sectionTitle" id="homeTitle">ÚLTIMOS JOGOS: CASA</div>
+        <div class="rows" id="homeRows"><div class="empty">Nenhum jogo carregado ainda.</div></div>
+        <div class="midMatch">
+          <div class="midLogo">🏀</div>
+          <div class="midCenter"><div class="dash">-</div><div id="midDate">—</div></div>
+          <div class="midLogo">🏀</div>
+        </div>
+        <div class="adBar">18+ Jogue com responsabilidade</div>
+        <div class="sectionTitle" id="awayTitle" style="margin-top:13px">ÚLTIMOS JOGOS: FORA</div>
+        <div class="rows" id="awayRows"><div class="empty">Nenhum jogo carregado ainda.</div></div>
+        <div class="showMore">Mostrar mais jogos ⌄</div>
+        <div class="sectionTitle">CONFRONTOS DIRETOS</div>
+        <div class="rows" id="h2hRows"><div class="empty">Nenhum confronto direto carregado ainda.</div></div>
+        <div class="showMore">Mostrar mais jogos ⌄</div>
+      </section>
+
+      <section class="calcCard">
+        <h3 class="calcTitle">Tabela de cálculo</h3>
+        <div class="summaryTop">
+          <div class="miniBox"><span>Jogos Casa</span><b id="sumHomeGames">0</b></div>
+          <div class="miniBox"><span>Pts Favor Casa</span><b id="sumHomeFavor">0</b></div>
+          <div class="miniBox"><span>Pts Contra Casa</span><b id="sumHomeContra">0</b></div>
+          <div class="miniBox"><span>Média Casa</span><b id="sumHomeAvg">0</b></div>
+          <div class="miniBox"><span>Jogos Fora</span><b id="sumAwayGames">0</b></div>
+          <div class="miniBox"><span>Pts Favor Fora</span><b id="sumAwayFavor">0</b></div>
+          <div class="miniBox"><span>Pts Contra Fora</span><b id="sumAwayContra">0</b></div>
+          <div class="miniBox"><span>Média Fora</span><b id="sumAwayAvg">0</b></div>
+        </div>
+
+        <div class="sheet">
+          <table class="calcTable">
+            <tr>
+              <th></th>
+              <th>Q1</th>
+              <th>Q2</th>
+              <th>Half</th>
+              <th>Q3</th>
+              <th>Q4</th>
+              <th>T</th>
+              <th rowspan="3">Pts.Total<br><span class="big" id="pointsTotal">-</span></th>
+            </tr>
+            <tr>
+              <td class="leftLab">Casa</td>
+              <td id="hq1">-</td>
+              <td id="hq2">-</td>
+              <td class="green" id="hhalf">-</td>
+              <td id="hq3">-</td>
+              <td id="hq4">-</td>
+              <td class="subBig" id="htotal">-</td>
+            </tr>
+            <tr>
+              <td class="leftLab">Fora</td>
+              <td id="aq1">-</td>
+              <td id="aq2">-</td>
+              <td class="red" id="ahalf">-</td>
+              <td id="aq3">-</td>
+              <td id="aq4">-</td>
+              <td class="subBig" id="atotal">-</td>
+            </tr>
+            <tr>
+              <td class="leftLab">M/Pts</td>
+              <td class="green" id="mptsQ1">-</td>
+              <td class="red" id="mptsQ2">-</td>
+              <td class="neutral">Pts.Poss.</td>
+              <td class="green" id="mptsQ3">-</td>
+              <td class="red" id="mptsQ4">-</td>
+              <td rowspan="2"></td>
+              <td rowspan="2"><div class="subBig">Linha-Bet</div><div class="big" id="lineBet">-</div></td>
+            </tr>
+            <tr>
+              <td colspan="3" class="green"><div class="subBig">Pts/1ª Parte</div><div class="numberStrong" id="ptsFirstHalf">-</div></td>
+              <td class="green"><div class="subBig">Prev.</div><div class="numberStrong" id="prediction">-</div></td>
+              <td colspan="2" class="red"><div class="subBig">Pts/2ª Parte</div><div class="numberStrong" id="ptsSecondHalf">-</div></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="footerRow">
+          <div class="footBox"><span>Entrada sugerida</span><b id="suggestion">-</b></div>
+          <div class="footBox"><span>Pts/Qt.</span><b id="perQuarter">-</b></div>
+          <div class="footBox"><span>Dif. Bet</span><b id="diffBet">-</b></div>
+          <div class="footBox"><span>Fonte</span><b>XScores</b></div>
+        </div>
+        <div class="source">Fonte dos dados: <a id="sourceLink" href="#" target="_blank" rel="noopener">abrir jogo no XScores</a></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const gamesContainer = document.getElementById('gamesContainer');
+    const todayLabel = document.getElementById('todayLabel');
+
+    let selectedGameUrl = null;
+
+    function fmtStatus(status){
+      if(status === 'Ao vivo') return '<span class="status live">AO VIVO</span>';
+      if(status === 'Encerrado') return '<span class="status fin">ENCERRADO</span>';
+      return '<span class="status sched">AGENDADO</span>';
+    }
+
+    function normalize(v){
+      return (v === null || v === undefined || v === '' || Number.isNaN(v)) ? '-' : v;
+    }
+
+    function renderGameGroups(payload){
+      if(!payload.games || !payload.games.length){
+        gamesContainer.innerHTML = '<div class="empty">Nenhum jogo encontrado agora.</div>';
+        return;
+      }
+      const firstDate = payload.games[0]?.dateSlug || '';
+      todayLabel.textContent = firstDate ? firstDate.replace(/-/g,'/') : 'Hoje';
+      const html = payload.groups.map(group => `
+        <div class="leagueHeader"><div>${group.title}</div><small>${group.games.length}</small></div>
+        ${group.games.map(game => `
+          <div class="gameItem" data-url="${game.href}">
+            <div class="timeCell">${game.time}<br>-</div>
+            <div class="teamsCell">
+              <div class="teamLine">🏀 <span>${game.home}</span></div>
+              <div class="teamLine">🏀 <b>${game.away}</b></div>
+            </div>
+            <div class="metaRight">${fmtStatus(game.status)}</div>
+          </div>
+        `).join('')}
+      `).join('');
+      gamesContainer.innerHTML = html;
+      document.querySelectorAll('.gameItem').forEach(el => {
+        el.addEventListener('click', () => selectGame(el.dataset.url, el));
+      });
+      const first = document.querySelector('.gameItem');
+      if(first) selectGame(first.dataset.url, first);
+    }
+
+    function renderRows(targetId, rows, selectedHome, selectedAway){
+      const el = document.getElementById(targetId);
+      if(!rows || !rows.length){
+        el.innerHTML = '<div class="empty">Sem dados disponíveis.</div>';
+        return;
+      }
+      el.innerHTML = rows.map(r => `
+        <div class="row">
+          <div class="dateCell">${normalize(r.date)}</div>
+          <div class="leagueCode">${normalize(r.leagueCode)}</div>
+          <div class="teamsCol">
+            <div class="team">🏀 <span>${r.home === selectedHome || r.home === selectedAway ? '<strong>'+r.home+'</strong>' : r.home}</span></div>
+            <div class="team">🏀 <span>${r.away === selectedHome || r.away === selectedAway ? '<strong>'+r.away+'</strong>' : r.away}</span></div>
+          </div>
+          <div class="scoreCol"><span>${normalize(r.homeScore)}</span><span>${normalize(r.awayScore)}</span></div>
+          <div>${r.result ? `<span class="badge ${r.result}">${r.result}</span>` : ''}</div>
+        </div>
+      `).join('');
+    }
+
+    function setText(id, value){
+      document.getElementById(id).textContent = normalize(value);
+    }
+
+    function renderCalc(summary){
+      if(!summary){ return; }
+      setText('sumHomeGames', summary.homeGames);
+      setText('sumHomeFavor', summary.homePtsFavor);
+      setText('sumHomeContra', summary.homePtsContra);
+      setText('sumHomeAvg', summary.avgHome);
+      setText('sumAwayGames', summary.awayGames);
+      setText('sumAwayFavor', summary.awayPtsFavor);
+      setText('sumAwayContra', summary.awayPtsContra);
+      setText('sumAwayAvg', summary.avgAway);
+
+      const qh = summary.current?.qHome || [];
+      const qa = summary.current?.qAway || [];
+
+      setText('hq1', qh[0]); setText('hq2', qh[1]); setText('hq3', qh[2]); setText('hq4', qh[3]);
+      setText('aq1', qa[0]); setText('aq2', qa[1]); setText('aq3', qa[2]); setText('aq4', qa[3]);
+      setText('hhalf', (Number.isFinite(qh[0]) && Number.isFinite(qh[1])) ? qh[0] + qh[1] : '-');
+      setText('ahalf', (Number.isFinite(qa[0]) && Number.isFinite(qa[1])) ? qa[0] + qa[1] : '-');
+      setText('htotal', summary.current?.totalHome);
+      setText('atotal', summary.current?.totalAway);
+      setText('pointsTotal', summary.current?.pointsTotal);
+      setText('lineBet', summary.line);
+      setText('prediction', summary.current?.prediction);
+      setText('ptsFirstHalf', summary.current?.pts1);
+      setText('ptsSecondHalf', summary.current?.pts2);
+      setText('diffBet', summary.current?.diffBet);
+      setText('suggestion', summary.current?.suggestion);
+      setText('perQuarter', summary.perQuarter);
+
+      setText('mptsQ1', (Number.isFinite(qh[0]) && Number.isFinite(qa[0])) ? qh[0] + qa[0] : '-');
+      setText('mptsQ2', (Number.isFinite(qh[1]) && Number.isFinite(qa[1])) ? qh[1] + qa[1] : '-');
+      setText('mptsQ3', (Number.isFinite(qh[2]) && Number.isFinite(qa[2])) ? qh[2] + qa[2] : '-');
+      setText('mptsQ4', (Number.isFinite(qh[3]) && Number.isFinite(qa[3])) ? qh[3] + qa[3] : '-');
+    }
+
+    function renderDetail(data){
+      document.getElementById('crumb').textContent = `🏀 BASQUETE › ${data.competition || 'BASQUETE'} › H2H`;
+      document.getElementById('homeName').textContent = data.home;
+      document.getElementById('awayName').textContent = data.away;
+      document.getElementById('matchDate').textContent = data.date || '-';
+      document.getElementById('midDate').textContent = data.date || '-';
+      document.getElementById('homeFilter').textContent = `${data.home.toUpperCase()} · CASA`;
+      document.getElementById('awayFilter').textContent = `${data.away.toUpperCase()} · FORA`;
+      document.getElementById('homeTitle').textContent = `ÚLTIMOS JOGOS: ${data.home.toUpperCase()}`;
+      document.getElementById('awayTitle').textContent = `ÚLTIMOS JOGOS: ${data.away.toUpperCase()}`;
+      document.getElementById('subHero').textContent = `Fonte: ${data.source} · ${data.competition || ''}`;
+
+      const scoreMid = data.live && data.live.homeScore != null && data.live.awayScore != null
+        ? `${data.live.homeScore} - ${data.live.awayScore}`
+        : '-';
+      document.getElementById('heroMid').textContent = scoreMid;
+      document.getElementById('sourceLink').href = data.sourceUrl || '#';
+
+      renderRows('homeRows', data.homeResults || [], data.home, data.away);
+      renderRows('awayRows', data.awayResults || [], data.home, data.away);
+      renderRows('h2hRows', data.h2h || [], data.home, data.away);
+      renderCalc(data.summary);
+      document.getElementById('detailCard').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    async function selectGame(url, clickedEl){
+      selectedGameUrl = url;
+      document.querySelectorAll('.gameItem').forEach(x => x.classList.remove('active'));
+      if(clickedEl) clickedEl.classList.add('active');
+      document.getElementById('homeRows').innerHTML = '<div class="loading">Carregando últimos jogos…</div>';
+      document.getElementById('awayRows').innerHTML = '<div class="loading">Carregando últimos jogos…</div>';
+      document.getElementById('h2hRows').innerHTML = '<div class="loading">Carregando confrontos diretos…</div>';
+      try{
+        const resp = await fetch(`/api/match?url=${encodeURIComponent(url)}`);
+        const data = await resp.json();
+        if(!data.ok) throw new Error(data.error || 'Erro ao carregar jogo.');
+        if(selectedGameUrl !== url) return;
+        renderDetail(data);
+      }catch(err){
+        document.getElementById('homeRows').innerHTML = `<div class="error">${err.message}</div>`;
+        document.getElementById('awayRows').innerHTML = `<div class="error">${err.message}</div>`;
+        document.getElementById('h2hRows').innerHTML = `<div class="error">${err.message}</div>`;
+      }
+    }
+
+    async function loadToday(){
+      try{
+        const resp = await fetch('/api/today');
+        const data = await resp.json();
+        if(!data.ok) throw new Error(data.error || 'Erro ao carregar jogos.');
+        renderGameGroups(data);
+      }catch(err){
+        gamesContainer.innerHTML = `<div class="error">${err.message}</div>`;
+      }
+    }
+
+    loadToday();
+  </script>
+</body>
+</html>
 

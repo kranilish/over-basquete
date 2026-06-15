@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Over Basquete com Busca Sofascore</title>
+<style>
+:root{--bg:#f3f5f7;--card:#fff;--grid:#cfd8dc;--green:#b7f0c1;--red:#ffc7c7;--yellow:#fff2a8;--dark:#0f172a;--blue:#e8f1ff}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#111}
+header{background:var(--dark);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+header h1{font-size:20px;margin:0}
+main{max-width:1200px;margin:auto;padding:18px}
+.wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:18px}
+.card{background:var(--card);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.08);padding:16px}
+h2{margin:0 0 12px;font-size:18px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th,td{border:1px solid var(--grid);text-align:center;padding:8px;font-size:15px}
+th{background:#e5e7eb}
+input,select{width:100%;border:0;background:transparent;text-align:center;font-size:16px;font-weight:700;outline:0}
+.teamInput{text-align:left}
+.green{background:var(--green)!important;font-weight:800}.red{background:var(--red)!important;font-weight:800}.blue{background:var(--blue)!important;font-weight:800}
+.big{font-size:32px;font-weight:900}.label{font-size:13px;color:#555;font-weight:700}
+.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.control{background:#fff;border:1px solid var(--grid);border-radius:10px;padding:10px}
+.control label{font-size:12px;font-weight:800;color:#555;display:block;margin-bottom:4px}
+.control input,.control select{background:#f9fafb;border:1px solid #d1d5db;border-radius:7px;padding:8px}
+.scoreboard{background:#202823;color:white;border-radius:10px;overflow:hidden;margin-bottom:14px}
+.scoreTop{display:flex;align-items:center;justify-content:center;gap:14px;font-size:24px;padding:18px;font-weight:800}
+.scoreTop span.score{color:#ffea00;font-size:32px}
+.btnrow{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:800;cursor:pointer;background:#2563eb;color:white}
+.btn.gray{background:#64748b}.btn.greenbtn{background:#16a34a}.btn.redbtn{background:#dc2626}
+.urlbox{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:10px}
+.urlbox input{background:#f8fafc;border:1px solid #cbd5e1;border-radius:10px;padding:11px;text-align:left;font-size:14px;font-weight:600}
+.status{font-size:13px;color:#475569;margin:8px 0 0}
+.result{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.box{border:1px solid var(--grid);border-radius:10px;background:#fff;padding:12px;text-align:center}
+.box strong{display:block;font-size:24px;margin-top:4px}
+.entry{margin-top:14px;border:3px solid #111;border-radius:10px;padding:12px;text-align:center;background:#fff}
+.entry .side{font-size:28px;font-weight:900}
+.paste{width:100%;min-height:92px;border:1px solid #cbd5e1;border-radius:10px;padding:10px;resize:vertical;font-size:14px}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}.controls{grid-template-columns:repeat(2,1fr)}.result{grid-template-columns:repeat(2,1fr)}.urlbox{grid-template-columns:1fr}th,td{font-size:13px;padding:6px}}
+</style>
+</head>
+<body>
+<header><h1>Over Basquete — Busca automática Sofascore</h1><button class="btn greenbtn" onclick="calcular()">Atualizar</button></header>
+<main>
+<div class="wrap">
+<section class="card">
+<h2>Buscar jogo pelo Sofascore</h2>
+<div class="urlbox">
+<input id="gameUrl" placeholder="Cole o link do jogo Sofascore com #id:123456 ou cole apenas o ID do evento">
+<button class="btn greenbtn" onclick="buscarSofascore()">Buscar dados</button>
+</div>
+<div class="btnrow">
+<button class="btn gray" onclick="buscarDemo()">Testar exemplo da imagem</button>
+<button class="btn redbtn" onclick="limpar()">Limpar</button>
+</div>
+<p class="status" id="statusBusca">Servidor local esperado: http://localhost:3000</p>
+
+<h2 style="margin-top:18px">Jogo ao vivo</h2>
+<div class="scoreboard">
+<div class="scoreTop"><span id="nomeCasaTop">Instituto</span><span class="score" id="placarTop">87 63</span><span id="nomeForaTop">La Unión Formosa</span></div>
+<table>
+<thead><tr><th>Equipe</th><th>Q1</th><th>Q2</th><th>Half</th><th>Q3</th><th>Q4</th><th>T</th></tr></thead>
+<tbody>
+<tr><td><input class="teamInput" id="casa" value="Instituto" oninput="calcular()"></td><td><input id="c_q1" type="number" value="22" oninput="calcular()"></td><td><input id="c_q2" type="number" value="22" oninput="calcular()"></td><td id="c_half">44</td><td><input id="c_q3" type="number" value="29" oninput="calcular()"></td><td><input id="c_q4" type="number" value="14" oninput="calcular()"></td><td id="c_total">87</td></tr>
+<tr><td><input class="teamInput" id="fora" value="La Unión Formosa" oninput="calcular()"></td><td><input id="f_q1" type="number" value="21" oninput="calcular()"></td><td><input id="f_q2" type="number" value="17" oninput="calcular()"></td><td id="f_half">38</td><td><input id="f_q3" type="number" value="13" oninput="calcular()"></td><td><input id="f_q4" type="number" value="12" oninput="calcular()"></td><td id="f_total">63</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Colagem manual reserva</h2>
+<textarea class="paste" id="pasteBox" placeholder="Instituto 22 22 29 14&#10;La Unión Formosa 21 17 13 12"></textarea>
+<div class="btnrow"><button class="btn" onclick="colarDados()">Preencher pela colagem</button></div>
+</section>
+
+<section class="card">
+<h2>Planilha de cálculo</h2>
+<div class="controls">
+<div class="control"><label>Jogos Casa</label><input id="jogosCasa" type="number" value="21" oninput="calcular()"></div>
+<div class="control"><label>Pts Favor Casa</label><input id="favorCasa" type="number" value="1701" oninput="calcular()"></div>
+<div class="control"><label>Pts Contra Casa</label><input id="contraCasa" type="number" value="1620" oninput="calcular()"></div>
+<div class="control"><label>Média Casa</label><input id="mediaCasa" type="number" value="158" oninput="calcular()"></div>
+<div class="control"><label>Jogos Fora</label><input id="jogosFora" type="number" value="19" oninput="calcular()"></div>
+<div class="control"><label>Pts Favor Fora</label><input id="favorFora" type="number" value="1449" oninput="calcular()"></div>
+<div class="control"><label>Pts Contra Fora</label><input id="contraFora" type="number" value="1563" oninput="calcular()"></div>
+<div class="control"><label>Média Fora</label><input id="mediaFora" type="number" value="159" oninput="calcular()"></div>
+<div class="control"><label>Linha do Jogo</label><input id="linhaJogo" type="number" step="0.5" value="158" oninput="calcular()"></div>
+<div class="control"><label>Linha Bet</label><input id="linhaBet" type="number" step="0.5" value="164.5" oninput="calcular()"></div>
+<div class="control"><label>Stake</label><input id="stake" type="number" step="0.01" value="5" oninput="calcular()"></div>
+<div class="control"><label>Odd</label><input id="odd" type="number" step="0.01" value="1.83" oninput="calcular()"></div>
+</div>
+
+<table>
+<thead><tr><th></th><th>Q1</th><th>Q2</th><th>Half</th><th>Q3</th><th>Q4</th><th>T</th><th>Pts.Total</th></tr></thead>
+<tbody>
+<tr><th>Casa</th><td id="pc_q1">22</td><td id="pc_q2">22</td><td id="pc_half">44</td><td id="pc_q3">29</td><td id="pc_q4">14</td><td id="pc_total">87</td><td rowspan="2" class="big" id="ptsTotal">150</td></tr>
+<tr><th>Fora</th><td id="pf_q1">21</td><td id="pf_q2">17</td><td id="pf_half">38</td><td id="pf_q3">13</td><td id="pf_q4">12</td><td id="pf_total">63</td></tr>
+<tr><th>M/Pts</th><td id="m_q1"></td><td id="m_q2"></td><td class="blue">Pts.Poss.</td><td id="m_q3"></td><td id="m_q4"></td><td></td><td class="label">Linha-Bet</td></tr>
+<tr><td colspan="3" class="green"><span class="label">Pts/1ª Parte</span><br><span class="big" id="pts1p">41</span></td><td class="green"><span class="label">Prev.</span><br><span id="previsao">165,3</span></td><td colspan="2" class="red"><span class="label">Pts/2ª Parte</span><br><span class="big" id="pts2p">34</span></td><td></td><td class="big" id="linhaBetShow">164,5</td></tr>
+</tbody>
+</table>
+
+<div class="result">
+<div class="box"><span class="label">Acertos</span><strong id="acertos">0</strong></div>
+<div class="box"><span class="label">Erros</span><strong id="erros">0</strong></div>
+<div class="box"><span class="label">Dif. Bet</span><strong id="diffBet">0</strong></div>
+<div class="box"><span class="label">Faltam</span><strong id="faltam">0</strong></div>
+</div>
+
+<div class="entry"><div class="label">Entrada sugerida</div><div class="side" id="entrada">OVER 164,5</div><div id="motivo">Previsão acima da linha da Bet.</div></div>
+
+<table style="margin-top:14px">
+<tbody><tr><th>Stake</th><th>Odd</th><th>Retorno</th><th>Lucro/Prej.</th></tr>
+<tr><td id="stakeShow">R$ 5,00</td><td id="oddShow">1,83</td><td id="retorno">R$ 9,15</td><td id="lucro">R$ 4,15</td></tr></tbody>
+</table>
+</section>
+</div>
+</main>
+
+<script>
+function n(id){return Number(document.getElementById(id).value||0)}
+function fmt(v,dec=1){return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec})}
+function money(v){return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function set(id,v){document.getElementById(id).textContent=v}
+
+function preencherJogo(data){
+  document.getElementById('casa').value = data.home || 'Casa';
+  document.getElementById('fora').value = data.away || 'Fora';
+  const h = data.quarters?.home || [0,0,0,0];
+  const a = data.quarters?.away || [0,0,0,0];
+  ['q1','q2','q3','q4'].forEach((q,i)=>{
+    document.getElementById('c_'+q).value = h[i] || 0;
+    document.getElementById('f_'+q).value = a[i] || 0;
+  });
+  calcular();
+}
+
+async function buscarSofascore(){
+  const input = document.getElementById('gameUrl').value.trim();
+  const st = document.getElementById('statusBusca');
+  if(!input){ st.textContent = 'Cole o link ou ID do jogo primeiro.'; return; }
+  st.textContent = 'Buscando no servidor local...';
+  try{
+    const r = await fetch('/api/sofascore?url=' + encodeURIComponent(input));
+    const data = await r.json();
+    if(!r.ok) throw new Error(data.error || 'Erro ao buscar jogo');
+    preencherJogo(data);
+    st.textContent = 'Dados preenchidos: ' + data.home + ' x ' + data.away + ' | Status: ' + (data.status || '-') + ' | ID: ' + data.eventId;
+  }catch(err){
+    st.textContent = 'Erro: ' + err.message;
+  }
+}
+
+async function buscarDemo(){
+  const st = document.getElementById('statusBusca');
+  st.textContent = 'Carregando exemplo...';
+  const r = await fetch('/api/demo');
+  const data = await r.json();
+  preencherJogo(data);
+  st.textContent = 'Exemplo carregado.';
+}
+
+function calcular(){
+  const casa=document.getElementById('casa').value||'Casa', fora=document.getElementById('fora').value||'Fora';
+  set('nomeCasaTop',casa);set('nomeForaTop',fora);
+  const cq1=n('c_q1'),cq2=n('c_q2'),cq3=n('c_q3'),cq4=n('c_q4'),fq1=n('f_q1'),fq2=n('f_q2'),fq3=n('f_q3'),fq4=n('f_q4');
+  const cHalf=cq1+cq2,fHalf=fq1+fq2,cTotal=cq1+cq2+cq3+cq4,fTotal=fq1+fq2+fq3+fq4,total=cTotal+fTotal;
+  set('c_half',cHalf);set('f_half',fHalf);set('c_total',cTotal);set('f_total',fTotal);set('placarTop',cTotal+'  '+fTotal);
+  ['q1','q2','q3','q4'].forEach(q=>{set('pc_'+q,document.getElementById('c_'+q).value||0);set('pf_'+q,document.getElementById('f_'+q).value||0)});
+  set('pc_half',cHalf);set('pf_half',fHalf);set('pc_total',cTotal);set('pf_total',fTotal);set('ptsTotal',total);
+  const q1=cq1+fq1,q2=cq2+fq2,q3=cq3+fq3,q4=cq4+fq4,linhaJogo=n('linhaJogo'),linhaBet=n('linhaBet'),mediaQt=linhaJogo/4;
+  set('m_q1',q1);set('m_q2',q2);set('m_q3',q3);set('m_q4',q4);
+  ['m_q1','m_q2','m_q3','m_q4'].forEach((id,i)=>{const val=[q1,q2,q3,q4][i];document.getElementById(id).className=val>=mediaQt?'green':'red'});
+  const pts1p=(q1+q2)/2,pts2p=(q3+q4)/2,quartos=[q1,q2,q3,q4].filter(x=>x>0).length||1,previsao=(total/quartos)*4;
+  set('pts1p',fmt(pts1p,0));set('pts2p',fmt(pts2p,0));set('previsao',fmt(previsao,1));set('linhaBetShow',fmt(linhaBet,1));
+  const diff=previsao-linhaBet,faltam=Math.max(0,linhaBet-total);set('diffBet',fmt(diff,1));set('faltam',fmt(faltam,1));
+  let entrada='AGUARDAR',motivo='Sem vantagem clara no momento.';
+  if(previsao>linhaBet&&total<linhaBet){entrada='OVER '+fmt(linhaBet,1);motivo='Previsão acima da linha da Bet e ainda faltam pontos para bater.'}
+  else if(previsao>linhaBet&&total>=linhaBet){entrada='OVER JÁ BATEU';motivo='A pontuação atual já passou da linha da Bet.'}
+  else if(previsao<linhaBet){entrada='UNDER '+fmt(linhaBet,1);motivo='Previsão abaixo da linha da Bet.'}
+  set('entrada',entrada);set('motivo',motivo);
+  set('acertos',[q1,q2,q3,q4].filter(x=>x>=mediaQt).length);set('erros',[q1,q2,q3,q4].filter(x=>x>0&&x<mediaQt).length);
+  const stake=n('stake'),odd=n('odd'),retorno=stake*odd,lucro=retorno-stake;set('stakeShow',money(stake));set('oddShow',fmt(odd,2));set('retorno',money(retorno));set('lucro',money(lucro));
+}
+function colarDados(){
+  const txt=document.getElementById('pasteBox').value.trim(); if(!txt)return;
+  const lines=txt.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  if(lines.length>=2){
+    const parseLine=line=>{const nums=line.match(/\d+(?:[.,]\d+)?/g)?.map(x=>Number(x.replace(',','.')))||[];const name=line.replace(/\d+(?:[.,]\d+)?/g,'').trim()||'';return{name,nums}};
+    const a=parseLine(lines[0]),b=parseLine(lines[1]); if(a.name)document.getElementById('casa').value=a.name; if(b.name)document.getElementById('fora').value=b.name;
+    ['q1','q2','q3','q4'].forEach((q,i)=>{if(a.nums[i]!==undefined)document.getElementById('c_'+q).value=a.nums[i];if(b.nums[i]!==undefined)document.getElementById('f_'+q).value=b.nums[i]});
+    calcular();
+  }
+}
+function limpar(){['casa','fora'].forEach(id=>document.getElementById(id).value='');['c_q1','c_q2','c_q3','c_q4','f_q1','f_q2','f_q3','f_q4'].forEach(id=>document.getElementById(id).value='');document.getElementById('pasteBox').value='';calcular()}
+calcular();
+</script>
+</body>
+</html>
